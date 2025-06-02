@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 
-const AddEditNotes = ({ noteData, type, onClose }) => {
+const AddEditNotes = ({ noteData, type, onClose, onAdd, onEdit }) => {
   const [title, setTitle] = useState(noteData?.title || '')
   const [content, setContent] = useState(noteData?.content || '')
   const [tags, setTags] = useState(noteData?.tags || ['personal', 'work'])
   const [tagInput, setTagInput] = useState('')
   const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput)) {
@@ -25,16 +26,7 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
     }
   }
 
-  const addNewNote = () => {
-    
-  }
-
-
-  const editNote = () => {
-    
-  }
-
-  const handleAddNote = () => {
+  const handleAddNote = async () => {
     if (!title.trim()) {
       setError('Title is required.')
       return
@@ -43,26 +35,23 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
       setError('Content is required.')
       return
     }
-
     setError(null)
-
-    if(type == 'edit'){
-        editNote();
+    setLoading(true)
+    let res
+    if (type === 'edit') {
+      res = await onEdit(noteData._id, { title, content, tags })
+    } else {
+      res = await onAdd({ title, content, tags })
     }
-    else addNewNote()
-    
-    // const newNote = {
-    //   title: title.trim(),
-    //   content: content.trim(),
-    //   tags,
-    //   date: new Date().toLocaleDateString()
-    // }
-
-    // console.log('Saving note:', newNote)
-
-    // TODO: Pass data back to parent or API
-
-    onClose()
+    setLoading(false)
+    if (res && res.error) {
+      setError(res.message || 'Failed to save note')
+    } else {
+      setTitle('')
+      setContent('')
+      setTags(['personal', 'work'])
+      onClose()
+    }
   }
 
   return (
@@ -145,8 +134,9 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
         <button 
           onClick={handleAddNote}
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors font-medium"
+          disabled={loading}
         >
-          {type === 'edit' ? 'Update Note' : 'Save Note'}
+          {loading ? 'Saving...' : (type === 'edit' ? 'Update Note' : 'Save Note')}
         </button>
       </div>
     </div>

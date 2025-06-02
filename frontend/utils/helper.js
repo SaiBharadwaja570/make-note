@@ -1,6 +1,6 @@
 export const validEmail = (email) => {
-    const regex = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$';
-    return email.test(regex);
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
 };
 
 export const getInitials = (name) => {
@@ -17,3 +17,60 @@ export const getInitials = (name) => {
 
     return initials.toUpperCase();
 }
+
+const API_BASE = 'http://localhost:8000';
+
+export const apiGet = async (url, token) => {
+    const res = await fetch(API_BASE + url, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return res.json();
+};
+
+export const apiPost = async (url, data, token) => {
+    const res = await fetch(API_BASE + url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(data)
+    });
+    return res.json();
+};
+
+export const apiPut = async (url, data, token) => {
+    const res = await fetch(API_BASE + url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(data)
+    });
+    return res.json();
+};
+
+export const apiDelete = async (url, token) => {
+    const res = await fetch(API_BASE + url, {
+        method: 'DELETE',
+        headers: {
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+    });
+    return res.json();
+};
+
+export const apiPatch = async (url, data, token) => {
+    const res = await fetch(API_BASE + url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(data)
+    });
+    return res.json();
+};

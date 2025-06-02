@@ -5,14 +5,17 @@ import SearchBox from './SearchBar/SearchBox';
 
 const Navbar = () => {
   const [ searchQuery, setSearchQuery ] = React.useState('');
-  const navigte = useNavigate;
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
 
   const onLogout = () => {
-    navigte('/login')
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
   }
 
   const handleSearch = () => {
-    
+    // Implement search if needed
   }
 
   const onClearSearch = () => {
@@ -31,7 +34,7 @@ const Navbar = () => {
       onClearSearch={onClearSearch}
       />
 
-      <ProfileInfo onLogout={onLogout} />
+      <ProfileInfo onLogout={onLogout} name={user?.fullName} />
     </div>
   )
 }
